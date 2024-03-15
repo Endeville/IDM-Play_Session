@@ -7,6 +7,7 @@ import tudelft.wis.idm_tasks.boardGameTracker.interfaces.PlaySession;
 import tudelft.wis.idm_tasks.boardGameTracker.interfaces.Player;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -55,21 +56,41 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     }
 
     @Override
-    public Player createNewPlayer(String name, String nickname) throws BgtException, SQLException {
-        var query= connection.prepareStatement("""
-                insert into players(name, nickname)
-                values(?, ?)
-                """);
-        query.setString(1, name);
-        query.setString(2, nickname);
-        var result = query.executeQuery();
-        result.next();
-        return result.getObject(0, Player.class);
+    public Player createNewPlayer(String name, String nickname) throws BgtException {
+        try {
+            var query = connection.prepareStatement("""
+                    insert into players(name, nickname)
+                    values(?, ?)
+                    """);
+            query.setString(1, name);
+            query.setString(2, nickname);
+            var result = query.executeQuery();
+            result.next();
+            return result.getObject(1, Player.class);
+        } catch (SQLException e) {
+            throw new BgtException();
+        }
     }
 
     @Override
     public Collection<Player> findPlayersByName(String name) throws BgtException {
-        return null;
+        try {
+            var query = connection.prepareStatement("""
+                    select * from players p
+                    where p.name=?
+                    """);
+            query.setString(1, name);
+            var rs = query.executeQuery();
+            var list=new ArrayList<Player>();
+
+            while(rs.next()){
+                list.add(rs.getObject(1, Player.class));
+            }
+            return list;
+
+        } catch (SQLException e) {
+            throw new BgtException();
+        }
     }
 
     @Override
