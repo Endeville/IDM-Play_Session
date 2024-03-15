@@ -111,7 +111,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
             query.setString(2, bggURL);
             var result = query.executeQuery();
             result.next();
-            return result.getObject(0, BoardGame.class);
+            return result.getObject(1, BoardGame.class);
         } catch (SQLException throwables) {
             throw new BgtException();
         }
