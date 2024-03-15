@@ -28,24 +28,27 @@ public class BgtDataManagerImplementation implements BgtDataManager {
         if (connection != null) {
             Statement stmt = connection.createStatement();
 
-            String createDatabase = "DROP DATABASE IF EXISTS bgt;\n" +
-                    "CREATE DATABASE bgt;";
+            String createDatabase = """ 
+                    DROP DATABASE IF EXISTS bgt;
+                    CREATE DATABASE bgt """;
             stmt.execute(createDatabase);
 
 
-            String createBoardGameTable = "CREATE TABLE BoardGame ("
-                    + "id INT auto increment PRIMARY KEY,"
-                    + "name VARCHAR(255) NOT NULL,"
-                    + "bggURL VARCHAR(255) NOT NULL"
-                    + ")";
+            String createBoardGameTable = """
+                    CREATE TABLE BoardGame (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    bggURL VARCHAR(255) NOT NULL
+                    )""";
             stmt.execute(createBoardGameTable);
 
-            String createPlayerTable = "CREATE TABLE Player ("
-                    + "id INT auto increment PRIMARY KEY,"
-                    + "name VARCHAR(255) NOT NULL,"
-                    + "nickName VARCHAR(255),"
-                    + "FOREIGN KEY (id) REFERENCES BoardGame(id)"
-                    + ")";
+            String createPlayerTable = """ 
+                    CREATE TABLE Player (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    nickName VARCHAR(255),
+                    FOREIGN KEY (id) REFERENCES BoardGame(id)
+                    )""";
             stmt.execute(createPlayerTable);
         }
     }
