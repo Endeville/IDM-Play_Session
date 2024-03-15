@@ -6,10 +6,7 @@ import tudelft.wis.idm_tasks.boardGameTracker.interfaces.BoardGame;
 import tudelft.wis.idm_tasks.boardGameTracker.interfaces.PlaySession;
 import tudelft.wis.idm_tasks.boardGameTracker.interfaces.Player;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
 import java.util.Date;
 
@@ -58,8 +55,16 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     }
 
     @Override
-    public Player createNewPlayer(String name, String nickname) throws BgtException {
-        return null;
+    public Player createNewPlayer(String name, String nickname) throws BgtException, SQLException {
+        var query= connection.prepareStatement("""
+                insert into players(name, nickname)
+                values(?, ?)
+                """);
+        query.setString(1, name);
+        query.setString(2, nickname);
+        var result = query.executeQuery();
+        result.next();
+        return result.getObject(0, Player.class);
     }
 
     @Override

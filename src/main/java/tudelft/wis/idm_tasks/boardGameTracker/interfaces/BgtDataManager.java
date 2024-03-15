@@ -28,7 +28,7 @@ public interface BgtDataManager {
      * @return the new player
      * @throws java.sql.SQLException DB trouble
      */
-    public Player createNewPlayer(String name, String nickname) throws BgtException;
+    public Player createNewPlayer(String name, String nickname) throws BgtException, SQLException;
         // @TODO: Implement this method.
 
     /**
