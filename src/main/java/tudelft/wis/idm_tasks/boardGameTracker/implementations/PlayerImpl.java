@@ -38,4 +38,19 @@ public class PlayerImpl implements Player {
                 ", playerNickName='" + playerNickName + '\'' +
                 '}';
     }
+    //write eq
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        PlayerImpl player = (PlayerImpl) obj;
+        return player.getPlayerNickName().equals(this.getPlayerNickName());
+    }
 }

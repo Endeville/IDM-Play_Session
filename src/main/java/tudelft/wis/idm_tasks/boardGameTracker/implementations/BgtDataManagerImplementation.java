@@ -85,6 +85,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
             query.executeUpdate();
             return new PlayerImpl(name, nickname, new ArrayList<>());
         } catch (SQLException e) {
+
             throw new BgtException();
         }
     }
@@ -101,7 +102,29 @@ public class BgtDataManagerImplementation implements BgtDataManager {
             var list=new ArrayList<Player>();
 
             while(rs.next()){
-                list.add(rs.getObject(1, Player.class));
+                String name1 = rs.getString(1);
+                String nickname = rs.getString(2);
+                Collection boardGames = new ArrayList<BoardGame>();
+                var query2 = connection.prepareStatement("""
+                        select * from player_boardgame pb
+                        where pb.player_nickname=?
+                        """);
+                query2.setString(1, nickname);
+                var rs2 = query2.executeQuery();
+                while(rs2.next()){
+                    String gameName = rs2.getString(2);
+                    var query3 = connection.prepareStatement("""
+                            select * from boardgame bg
+                            where bg.name=?
+                            """);
+                    query3.setString(1, gameName);
+                    var rs3 = query3.executeQuery();
+                    while(rs3.next()){
+                        boardGames.add(new BoardGameImpl(rs3.getString(1), rs3.getString(2)));
+                    }
+                }
+
+                list.add(new PlayerImpl(name1, nickname, boardGames));
             }
             return list;
 
@@ -138,7 +161,11 @@ public class BgtDataManagerImplementation implements BgtDataManager {
             var list=new ArrayList<BoardGame>();
 
             while(rs.next()){
-                list.add(rs.getObject(1, BoardGame.class));
+                String name1 = rs.getString(1);
+                String bggURL = rs.getString(2);
+                list.add(new BoardGameImpl(name1, bggURL));
+
+
             }
             return list;
 
@@ -160,22 +187,50 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     @Override
     public void persistPlayer(Player player) throws BgtException {
         try {
+//            var query = connection.prepareStatement("""
+//                    insert into player(name, nickname)
+//                    values(?, ?)
+//                    """);
+//            query.setString(1, player.getPlayerName());
+//            query.setString(2, player.getPlayerNickName());
+//            query.executeUpdate();
+//
+//            var query2 = connection.prepareStatement("""
+//                    insert into player_boardgame(player_id, boardgame_name)
+//                    values (?, ?)
+//                    """);
+//            query2.setString(1, player.getPlayerNickName());
+//            for (BoardGame boardGame : player.getGameCollection()) {
+//                query2.setString(2, boardGame.getName());
+//                query2.executeUpdate();
+//            }
+            // delete all the games from the player
             var query = connection.prepareStatement("""
-                    insert into player(name, nickname)
-                    values(?, ?)
+                    delete from player_boardgame
+                    where player_nickname=?
                     """);
-            query.setString(1, player.getPlayerName());
-            query.setString(2, player.getPlayerNickName());
+            query.setString(1, player.getPlayerNickName());
             query.executeUpdate();
 
+            // udpate the player
             var query2 = connection.prepareStatement("""
-                    insert into player_boardgame(player_id, boardgame_name)
+                    update player
+                    set name=?
+                    where nickname=?
+                    """);
+            query2.setString(1, player.getPlayerName());
+            query2.setString(2, player.getPlayerNickName());
+            query2.executeUpdate();
+
+            // insert the games again
+            var query3 = connection.prepareStatement("""
+                    insert into player_boardgame(player_nickname, boardgame_name)
                     values (?, ?)
                     """);
-            query2.setString(1, player.getPlayerNickName());
+            query3.setString(1, player.getPlayerNickName());
             for (BoardGame boardGame : player.getGameCollection()) {
-                query2.setString(2, boardGame.getName());
-                query2.executeUpdate();
+                query3.setString(2, boardGame.getName());
+                query3.executeUpdate();
             }
 
         } catch (SQLException e) {
