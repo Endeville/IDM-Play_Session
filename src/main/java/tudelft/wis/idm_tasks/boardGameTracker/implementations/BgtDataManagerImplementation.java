@@ -38,20 +38,27 @@ public class BgtDataManagerImplementation implements BgtDataManager {
 
             String createBoardGameTable = """
                     CREATE TABLE if not exists BoardGame (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
+                    name VARCHAR(255) unique NOT NULL,
                     bggURL VARCHAR(255) NOT NULL
                     )""";
             stmt.execute(createBoardGameTable);
 
             String createPlayerTable = """ 
                     CREATE TABLE if not exists Player (
-                    id SERIAL PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
-                    nickName VARCHAR(255),
-                    FOREIGN KEY (id) REFERENCES BoardGame(id)
+                    nickName VARCHAR(255) unique
                     )""";
             stmt.execute(createPlayerTable);
+
+            String createPlayerBoardGameConnectionTable = """
+                    CREATE TABLE IF NOT EXISTS Player_BoardGame (
+                                                  player_nickname VARCHAR(255),
+                                                  boardgame_name VARCHAR(255),
+                                                  FOREIGN KEY (player_nickname) REFERENCES Player(nickname),
+                                                  FOREIGN KEY (boardgame_name) REFERENCES BoardGame(name),
+                                                  PRIMARY KEY (player_nickname, boardgame_name)
+                    )""";
+            stmt.execute(createPlayerBoardGameConnectionTable);
         }
     }
 
@@ -59,7 +66,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     public Player createNewPlayer(String name, String nickname) throws BgtException {
         try {
             var query = connection.prepareStatement("""
-                    insert into players(name, nickname)
+                    insert into player(name, nickname)
                     values(?, ?)
                     """);
             query.setString(1, name);
@@ -76,7 +83,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     public Collection<Player> findPlayersByName(String name) throws BgtException {
         try {
             var query = connection.prepareStatement("""
-                    select * from players p
+                    select * from player p
                     where p.name=?
                     """);
             query.setString(1, name);
@@ -142,8 +149,29 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     }
 
     @Override
-    public void persistPlayer(Player player) {
+    public void persistPlayer(Player player) throws BgtException {
+        try {
+            var query = connection.prepareStatement("""
+                    insert into player(name, nickname)
+                    values(?, ?)
+                    """);
+            query.setString(1, player.getPlayerName());
+            query.setString(2, player.getPlayerNickName());
+            query.executeQuery();
 
+            var query2 = connection.prepareStatement("""
+                    insert into player_boardgame(player_id, boardgame_name)
+                    values (?, ?)
+                    """);
+            query2.setString(1, player.getPlayerNickName());
+            for (BoardGame boardGame : player.getGameCollection()) {
+                query2.setString(2, boardGame.getName());
+                query2.executeQuery();
+            }
+
+        } catch (SQLException e) {
+            throw new BgtException();
+        }
     }
 
     @Override
@@ -152,7 +180,17 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     }
 
     @Override
-    public void persistBoardGame(BoardGame game) {
-
+    public void persistBoardGame(BoardGame game) throws BgtException {
+        try {
+            var query = connection.prepareStatement("""
+                    insert into boardgame(name, bggURL)
+                    values(?, ?)
+                    """);
+            query.setString(1, game.getName());
+            query.setString(2, game.getBGG_URL());
+            query.executeQuery();
+        } catch (SQLException e) {
+            throw new BgtException();
+        }
     }
 }

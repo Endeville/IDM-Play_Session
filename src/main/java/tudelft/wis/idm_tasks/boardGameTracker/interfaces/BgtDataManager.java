@@ -28,7 +28,7 @@ public interface BgtDataManager {
      * @return the new player
      * @throws java.sql.SQLException DB trouble
      */
-    public Player createNewPlayer(String name, String nickname) throws BgtException, SQLException;
+    public Player createNewPlayer(String name, String nickname) throws BgtException;
         // @TODO: Implement this method.
 
     /**
@@ -38,7 +38,7 @@ public interface BgtDataManager {
      * @return collection of all players containing the param substring in their names
      * @throws BgtException the bgt exception
      */
-    public Collection<Player> findPlayersByName(String name) throws BgtException, SQLException;
+    public Collection<Player> findPlayersByName(String name) throws BgtException;
         // @TODO: Implement this method.
 
     /**
@@ -95,7 +95,7 @@ public interface BgtDataManager {
      * Persists a given player to the DB. Note that this player might already exist and only needs an update :-)
      * @param player the player
      */
-    public void persistPlayer(Player player);
+    public void persistPlayer(Player player) throws BgtException;
         // @TODO: Implement this method.
 
     /**
@@ -109,7 +109,7 @@ public interface BgtDataManager {
      * Persists a given game to the DB. Note that this game might already exist and only needs an update :-)
      * @param game the game
      */
-    public void persistBoardGame(BoardGame game);
+    public void persistBoardGame(BoardGame game) throws BgtException;
         // @TODO: Implement this method.
 
 }
