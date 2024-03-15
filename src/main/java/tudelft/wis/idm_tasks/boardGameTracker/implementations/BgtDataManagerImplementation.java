@@ -28,14 +28,18 @@ public class BgtDataManagerImplementation implements BgtDataManager {
         if (connection != null) {
             Statement stmt = connection.createStatement();
 
-            String createDatabase = """ 
-                    DROP DATABASE IF EXISTS bgt;
-                    CREATE DATABASE bgt """;
-            stmt.execute(createDatabase);
+//            String createDatabase = """
+//                    DROP DATABASE IF EXISTS bgt;
+//                    CREATE DATABASE bgt; """;
+//            stmt.execute(createDatabase);
+
+//            String useStmt="bgt;";
+//
+//            stmt.execute(useStmt);
 
 
             String createBoardGameTable = """
-                    CREATE TABLE BoardGame (
+                    CREATE TABLE if not exists BoardGame (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     bggURL VARCHAR(255) NOT NULL
@@ -43,7 +47,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
             stmt.execute(createBoardGameTable);
 
             String createPlayerTable = """ 
-                    CREATE TABLE Player (
+                    CREATE TABLE if not exists Player (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     nickName VARCHAR(255),
