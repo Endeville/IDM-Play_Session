@@ -27,6 +27,11 @@ public class BgtDataManager_POJO implements BgtDataManager {
     private List<PlaySession_POJO> sessions = new LinkedList<PlaySession_POJO>();
 
     @Override
+    public void setUp() {
+
+    }
+
+    @Override
     public Player createNewPlayer(String name, String nickname) throws BgtException {
         Player_POJO player = new Player_POJO(name, nickname);
         players.add(player);

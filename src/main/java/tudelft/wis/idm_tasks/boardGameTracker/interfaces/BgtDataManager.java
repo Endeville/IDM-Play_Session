@@ -18,7 +18,7 @@ import tudelft.wis.idm_tasks.boardGameTracker.BgtException;
  */
 public interface BgtDataManager {
 
-    public void setUp();
+    public void setUp() throws SQLException;
 
     /**
      * Creates a new player and stores it in the DB.

@@ -14,7 +14,7 @@ public class Manager implements JDBCManager {
     }
     @Override
     public Connection getConnection() throws SQLException, ClassNotFoundException {
-        String url = "jdbc:postgresql://localhost:5432/board_game_tracker?createDatabaseIfNotExist=true";
+        String url = "jdbc:postgresql://localhost:5432/bgt?createDatabaseIfNotExist=true";
         Properties props = new Properties();
         props.setProperty("user", "postgres");
         props.setProperty("password", "123456");
