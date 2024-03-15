@@ -95,12 +95,40 @@ public class BgtDataManagerImplementation implements BgtDataManager {
 
     @Override
     public BoardGame createNewBoardgame(String name, String bggURL) throws BgtException {
-        return null;
+        try {
+            var query= connection.prepareStatement("""
+                insert into boardgame(name, bggURL)
+                values(?, ?)
+                """);
+            query.setString(1, name);
+            query.setString(2, bggURL);
+            var result = query.executeQuery();
+            result.next();
+            return result.getObject(0, BoardGame.class);
+        } catch (SQLException throwables) {
+            throw new BgtException();
+        }
     }
 
     @Override
     public Collection<BoardGame> findGamesByName(String name) throws BgtException {
-        return null;
+        try {
+            var query = connection.prepareStatement("""
+                    select * from boardgame bg
+                    where bg.name=?
+                    """);
+            query.setString(1, name);
+            var rs = query.executeQuery();
+            var list=new ArrayList<BoardGame>();
+
+            while(rs.next()){
+                list.add(rs.getObject(1, BoardGame.class));
+            }
+            return list;
+
+        } catch (SQLException e) {
+            throw new BgtException();
+        }
     }
 
     @Override
