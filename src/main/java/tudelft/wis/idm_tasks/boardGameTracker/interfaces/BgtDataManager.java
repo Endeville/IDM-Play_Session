@@ -20,6 +20,8 @@ public interface BgtDataManager {
 
     public void setUp() throws SQLException;
 
+    public void drop() throws SQLException;
+
     /**
      * Creates a new player and stores it in the DB.
      *

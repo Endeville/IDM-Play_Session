@@ -63,6 +63,17 @@ public class BgtDataManagerImplementation implements BgtDataManager {
     }
 
     @Override
+    public void drop() throws SQLException {
+        Statement stmt = connection.createStatement();
+        String drop = """
+        drop table if exists player_boardgame;
+        drop table if exists boardgame;
+        drop table if exists player;
+        """;
+        stmt.execute(drop);
+    }
+
+    @Override
     public Player createNewPlayer(String name, String nickname) throws BgtException {
         try {
             var query = connection.prepareStatement("""
@@ -71,9 +82,8 @@ public class BgtDataManagerImplementation implements BgtDataManager {
                     """);
             query.setString(1, name);
             query.setString(2, nickname);
-            var result = query.executeQuery();
-            result.next();
-            return result.getObject(1, Player.class);
+            query.executeUpdate();
+            return new PlayerImpl(name, nickname, new ArrayList<>());
         } catch (SQLException e) {
             throw new BgtException();
         }
@@ -109,9 +119,8 @@ public class BgtDataManagerImplementation implements BgtDataManager {
                 """);
             query.setString(1, name);
             query.setString(2, bggURL);
-            var result = query.executeQuery();
-            result.next();
-            return result.getObject(1, BoardGame.class);
+            query.executeUpdate();
+            return new BoardGameImpl(name, bggURL);
         } catch (SQLException throwables) {
             throw new BgtException();
         }
@@ -157,7 +166,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
                     """);
             query.setString(1, player.getPlayerName());
             query.setString(2, player.getPlayerNickName());
-            query.executeQuery();
+            query.executeUpdate();
 
             var query2 = connection.prepareStatement("""
                     insert into player_boardgame(player_id, boardgame_name)
@@ -166,7 +175,7 @@ public class BgtDataManagerImplementation implements BgtDataManager {
             query2.setString(1, player.getPlayerNickName());
             for (BoardGame boardGame : player.getGameCollection()) {
                 query2.setString(2, boardGame.getName());
-                query2.executeQuery();
+                query2.executeUpdate();
             }
 
         } catch (SQLException e) {

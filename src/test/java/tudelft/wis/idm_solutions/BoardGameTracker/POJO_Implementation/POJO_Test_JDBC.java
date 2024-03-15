@@ -49,10 +49,14 @@ public class POJO_Test_JDBC extends tudelft.wis.idm_solutions.BoardGameTracker.A
      * and the hist and the game is being checked.
      */
     @Test
-    public void basicTest() throws BgtException {
+    public void basicTest() throws BgtException, SQLException {
 
         // Make sure to start this test with an empty DB - trivial for POJO though...
         // Create dummy data
+
+        dataManager.drop();
+        dataManager.setUp();
+
         Collection<PlaySession> testSessions = this.createDummyData(12, 6);
 
         for (PlaySession session : testSessions) {

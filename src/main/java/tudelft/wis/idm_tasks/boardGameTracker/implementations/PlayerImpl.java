@@ -10,9 +10,10 @@ public class PlayerImpl implements Player {
     private String playerNickName;
     private Collection<BoardGame> gameCollection;
 
-    public PlayerImpl(String playerName, String playerNickName) {
+    public PlayerImpl(String playerName, String playerNickName, Collection<BoardGame> gameCollection) {
         this.playerName = playerName;
         this.playerNickName = playerNickName;
+        this.gameCollection = gameCollection;
     }
 
     @Override

@@ -32,6 +32,11 @@ public class BgtDataManager_POJO implements BgtDataManager {
     }
 
     @Override
+    public void drop() {
+
+    }
+
+    @Override
     public Player createNewPlayer(String name, String nickname) throws BgtException {
         Player_POJO player = new Player_POJO(name, nickname);
         players.add(player);
